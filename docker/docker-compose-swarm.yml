@@ -1,0 +1,26 @@
+version: '3.9'
+
+networks:
+  default:
+    external: true
+    name: lb-common
+
+services:
+  prism:
+    image: stoplight/prism:4
+    deploy:
+      replicas: 1
+      labels:
+        traefik.frontend.rule: "Host:prism.local.io,prism.local.com"
+        traefik.enable: "true"
+        traefik.backend: "prism_back"
+        traefik.port: "4010"
+        traefik.backend.healthcheck.path: /
+        traefik.backend.healthcheck.interval: 1s
+        traefik.backend.healthcheck.port: 4010
+        traefik.backend.healthcheck.scheme: http
+    networks:
+      - default
+    volumes:
+      - ./../apis:/tmp:ro
+    command: 'mock -h 0.0.0.0 /tmp/petstore.oas3.yml'
