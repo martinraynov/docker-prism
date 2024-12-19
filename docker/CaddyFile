@@ -1,0 +1,16 @@
+http://prism.local.io
+
+route /petstore/* {
+    uri strip_prefix /petstore
+    reverse_proxy prism_1:4010
+}
+
+route /traintravel/* {
+    uri strip_prefix /traintravel
+    reverse_proxy prism_2:4010
+}
+
+route /museum/* {
+    uri strip_prefix /museum
+    reverse_proxy prism_3:4010
+}

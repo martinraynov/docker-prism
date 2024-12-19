@@ -1,0 +1,48 @@
+networks:
+  default:
+    external: true
+    name: lb-common
+  prism:
+    external: false
+    name: prism
+
+services:
+  proxy:
+    image: caddy
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    container_name: prism_proxy
+    labels:
+      - "traefik.enable=true"
+
+      - "traefik.http.routers.prism.entrypoints=web"
+      - "traefik.http.routers.prism.rule=Host(`prism.local.io`)"
+      - "traefik.http.routers.prism.service=svc_prism"
+      - "traefik.http.services.svc_prism.loadbalancer.server.port=80"
+    depends_on:
+      - prism_1
+      - prism_2
+    networks:
+      - default
+      - prism
+  
+  prism_1: &prism_base
+    image: stoplight/prism:5
+    container_name: prism_1
+    labels:
+      - "traefik.enable=false"
+    networks:
+      - prism
+    volumes:
+      - ./../apis:/tmp:ro
+    command: 'mock -h 0.0.0.0 /tmp/petstore.oas3.yml'
+
+  prism_2:
+    <<: *prism_base
+    container_name: prism_2
+    command: 'mock -h 0.0.0.0 /tmp/traintravel.oas3.yml'
+
+  prism_3:
+    <<: *prism_base
+    container_name: prism_3
+    command: 'mock -h 0.0.0.0 /tmp/museum.oas3.yml'
