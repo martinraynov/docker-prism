@@ -40,4 +40,9 @@ services:
   prism_2:
     <<: *prism_base
     container_name: prism_2
-    command: 'mock -h 0.0.0.0 /tmp/petstore.oas3_2.yml'
+    command: 'mock -h 0.0.0.0 /tmp/traintravel.oas3.yml'
+
+  prism_3:
+    <<: *prism_base
+    container_name: prism_3
+    command: 'mock -h 0.0.0.0 /tmp/museum.oas3.yml'
